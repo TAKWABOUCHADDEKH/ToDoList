@@ -1,0 +1,26 @@
+---
+- name: Deploy ToDoList Application
+  hosts: iis_servers
+  tasks:
+    - name: Install prerequisites
+      win_feature:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - Web-Server
+        - Web-App-Dev
+        - Web-Asp-Net45
+
+    - name: Copy frontend package to IIS
+      win_copy:
+        src: "{{ frontend_package }}"
+        dest: "C:\\inetpub\\wwwroot\\ToDoList"
+
+    - name: Copy backend package to IIS
+      win_copy:
+        src: "{{ backend_package }}"
+        dest: "C:\\inetpub\\wwwroot\\ToDoList\\api"
+
+    - name: Restart IIS
+      win_shell: |
+        iisreset
